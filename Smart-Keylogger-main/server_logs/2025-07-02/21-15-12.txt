@@ -1,0 +1,9 @@
+
+[CLIPBOARD] SERVER_URL = "http://10.2.13.109:5000/upload"
+[up][enter]
+[up][up][up][enter]
+[ctrl_l][enter]
+[enter]
+[enter]
+so let try this one now and try to find if this wotkd=s[backspace][backspace][backspace][backspace][backspace]rks or not[enter]
+[ctrl_l]

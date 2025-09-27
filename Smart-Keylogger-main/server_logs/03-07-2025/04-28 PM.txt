@@ -1,0 +1,4 @@
+
+[📋 CLIPBOARD] files = sorted(folder.glob("*.txt"))  # Oldest to newest (3:15 PM, then 3:30 PM, etc.)
+
+evnpowevnwemp9vaeldvinsmwpdvhnespdvhnsdpovhnspd;bhnspdhnspohnpsobhnm

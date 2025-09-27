@@ -1,0 +1,3 @@
+
+[CLIPBOARD] http://10.2.10.254:5000
+[backspace][shift]F[backspace]f[ctrl_l][ctrl_l][ctrl_l]

@@ -1,0 +1,21 @@
+
+[CLIPBOARD] @app.route("/download-log/<date>/<filename>")
+def download_log(date, filename):
+    folder = log_dir / date
+    return send_from_directory(folder, filename, as_attachment=True)
+
+[up][up][enter]
+[ctrl_l][enter]
+[enter]
+ewijvnewpish [enter]
+eafjzcil sed[enter]
+ edsoivhnw emds[enter]
+eshdvnoeisd v[enter]
+ eodsivhncwemds[enter]
+ peosdlufgvbnemad[enter]
+ owekusdfbv[enter]
+'hnesdovilhn em,sd[enter]
+'hnv rosdilvhnjcw[enter]
+esd'vj wepsdigvbnwe[enter]
+sd'v;j nwempsd;vj ewk[enter]
+'[ctrl_l]
